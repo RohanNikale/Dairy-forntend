@@ -1,0 +1,91 @@
+:root {
+  --rs-white: #ffffff;
+  --rs-primary: #f472b7;
+  --rs-secondary: #9b64d3;
+}
+
+.bg-rest {
+
+}
+
+.navbar.fixed-bottom .nav-link {
+  font-weight: 600;
+}
+
+.navbar.fixed-bottom .nav-link .nav-icon {
+  text-align: center;
+  height: 2.3rem;
+  padding: 0.5rem;
+  border-radius: 1.25rem;
+  margin-bottom: 0.5rem;
+  max-width: 6rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.navbar.fixed-bottom .nav-link .nav-icon svg {
+  height: 1.5rem;
+}
+
+.navbar.fixed-bottom .nav-link.active .nav-icon,
+.navbar.fixed-bottom .nav-link:hover .nav-icon {
+  background: var(--rs-primary);
+  background: -moz-linear-gradient(
+    150deg,
+    var(--rs-primary) 20%,
+    var(--rs-secondary) 90%
+  );
+  background: -webkit-linear-gradient(
+    150deg,
+    var(--rs-primary) 20%,
+    var(--rs-secondary) 90%
+  );
+  background: linear-gradient(
+    150deg,
+    var(--rs-primary) 20%,
+    var(--rs-secondary) 90%
+  );
+}
+
+.navbar.fixed-bottom .nav-link.active .nav-icon svg,
+.navbar.fixed-bottom .nav-link:hover .nav-icon svg {
+  stroke: var(--rs-white);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.feedback {
+    background-color : #31B0D5;
+    color: white;
+    /* padding: 10px 20px; */
+    border-radius: 4px;
+    border-color: #46b8da;
+    width: 68px;
+    height: 70px;
+    
+    font-size: 2.5rem;
+    border-radius: 50%;
+}
+
+#mybutton {
+  z-index: 199;
+    position: fixed;
+    bottom: 130px;
+    right: 20px;
+  }
+
