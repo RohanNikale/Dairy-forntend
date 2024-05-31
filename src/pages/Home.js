@@ -1,10 +1,13 @@
-import React from 'react'
-import PostList from './Shayari'
+import React from 'react';
+import Shayari from './Shayari';
+
+
 
 export default function Home() {
-    return (
-        <div>
-            <PostList/>
-        </div>
-    )
+  return (
+    <div>
+        <Shayari />
+
+    </div>
+  );
 }

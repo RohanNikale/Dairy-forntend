@@ -1,14 +1,12 @@
 import React from 'react'
-import PostCard from '../components/PostCard'
-import { Link } from 'react-router-dom'
+import ShayariPost from '../components/ShayariPost'
 
 function PostList() {
     return (
         <div>
-            
-            <PostCard />
-            <PostCard />
-            <PostCard />
+            <ShayariPost />
+            <ShayariPost />
+            <ShayariPost />
         </div>
     )
 }

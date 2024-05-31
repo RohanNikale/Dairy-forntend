@@ -1,0 +1,37 @@
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+  }
+  
+
+  .post {
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  .post p {
+    font-size: 1.5em;
+    line-height: 1.6;
+  }
+  
+  .author {
+    margin-top: 10px;
+    font-weight: bold;
+  }
+  
+  .tags {
+    margin-top: 5px;
+    font-size: 0.9em;
+  }
+  
+  .tags a {
+    text-decoration: none;
+    color: #007bff;
+  }
+  
+  .post a{
+    color: black;
+    text-decoration: none;
+  }
