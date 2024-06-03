@@ -1,0 +1,11 @@
+.comment{
+    border: 1px solid rgba(0, 0, 0, 0.249);
+    margin: 10px 0;
+    padding: 10px;
+}
+.reply{
+    /* border: 1px solid rgba(0, 0, 0, 0.249); */
+    margin-left: 100px;
+    margin-top: 10px;
+    padding: 10px;
+}

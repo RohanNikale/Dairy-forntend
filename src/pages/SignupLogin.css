@@ -92,7 +92,8 @@ section .container .user .formBx form input {
 
 section .container .user .formBx form input[type='submit'] {
   /* max-width: 400px; */
-  background: #677eff;
+  /* background: #677eff; */
+  background: #e0245e;
   color: #fff;
   cursor: pointer;
   font-size: 14px;

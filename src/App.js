@@ -10,6 +10,7 @@ import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import Following from './pages/Following';
 import WhoToFollow from './components/WhoToFollow';
 import SignupLogin from './pages/SignupLogin';
+import PostList from './pages/PostList';
 
 function App() {
   return (
@@ -20,6 +21,9 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/following" element={<Following />} />
+            <Route path="/gazal" element={<PostList type={"gazal"} />} />
+            <Route path="/nazm" element={<PostList type={"nazm"} />} />
+            <Route path="/geet" element={<PostList type="geet" />} />
             <Route path="/post-form" element={<PostForm />} />
             <Route path="/post/:postid" element={<PostView />} />
             <Route path="/SignupLogin" element={<SignupLogin />} />
