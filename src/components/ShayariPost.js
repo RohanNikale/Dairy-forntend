@@ -1,30 +1,28 @@
 import React, { useContext, useState, useEffect } from 'react';
-import './ShayariPost.css'; // Make sure to create and import a CSS file for styling
-import userImage from './user.png'; // renamed user to userImage to avoid conflict with import user
-import { Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import './ShayariPost.css'; // Ensure this CSS file is created for styling
+import userImage from './user.png'; // Ensure this image is in the correct path
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { MyContext } from '../MyContext';
 
 const ShayariPost = ({ post }) => {
   const { backend_url, userData } = useContext(MyContext);
-  const userId = userData._id;
+  const navigate = useNavigate();
   const authToken = Cookies.get('authToken');
-  const [likes, setLikes] = useState(post.likes);
-  const [liked, setLiked] = useState(false);
 
-  useEffect(() => {
-    // Check if the user has already liked the post
-    console.log(userId)
-    if (userId) {
-      setLiked(likes.some(like => like.userId === userId));
-    }
-  }, [likes, userId]);
+  const [likes, setLikes] = useState(post.likesCount || 0);
+  const [liked, setLiked] = useState(post.liked || false);
 
   const handleToggleLike = async () => {
+    if (!authToken) {
+      navigate('/SignupLogin');
+      return;
+    }
+
     try {
       const response = await axios.post(
-        `${backend_url}/api/post/${post._id}/like`,
+        `${backend_url}/api/like/post/${post._id}/like`,
         {},
         {
           headers: {
@@ -33,11 +31,11 @@ const ShayariPost = ({ post }) => {
         }
       );
 
-      if (response.data.message === 'Post liked') {
-        setLikes([...likes, { userId, name: userData.name, username: userData.username }]);
+      if (response.data.liked) {
+        setLikes(likes + 1);
         setLiked(true);
-      } else if (response.data.message === 'Post unliked') {
-        setLikes(likes.filter(like => like.userId !== userId));
+      } else {
+        setLikes(likes - 1);
         setLiked(false);
       }
     } catch (error) {
@@ -57,7 +55,8 @@ const ShayariPost = ({ post }) => {
             <i
               className={`fa-${liked ? 'solid' : 'regular'} fa-heart`}
               onClick={handleToggleLike}
-            ></i> {likes.length}
+              style={{ cursor: 'pointer' }}
+            ></i> {likes}
             &nbsp;&nbsp;&nbsp;
             <i className="fa-solid fa-share"></i>&nbsp;{post.shares}
           </span>

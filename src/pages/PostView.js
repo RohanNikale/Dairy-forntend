@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import { MyContext } from '../MyContext';
 import CommentList from '../components/CommentList';
 import userImage from '../components/user.png';
@@ -9,37 +10,51 @@ import userImage from '../components/user.png';
 export default function PostView() {
   const { backend_url, userData } = useContext(MyContext);
   const { postid } = useParams();
+  const navigate = useNavigate();
   const [post, setPost] = useState(null);
   const [comments, setComments] = useState([]);
   const [commentText, setCommentText] = useState('');
+  const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
-  const [likes, setLikes] = useState([]);
+  const [likesCount, setLikesCount] = useState(0);
   const [liked, setLiked] = useState(false);
   const userId = userData._id;
   const authToken = Cookies.get('authToken');
 
   useEffect(() => {
     if (post) {
-      setLikes(post.likes);
-      setLiked(post.likes.some(like => like.userId === userId));
+      setLikesCount(post.likesCount);
+      // Check if the user has liked the post
+      axios.get(`${backend_url}/api/like/post/${post._id}/likeStatus`, {
+        headers: { token: authToken }
+      }).then(response => {
+        setLiked(response.data.liked);
+      }).catch(error => {
+        console.error('Error checking like status:', error);
+      });
     }
-  }, [post, userId]);
+  }, [post, backend_url, authToken]);
 
-  const handleToggleLike = async () => {
+  const handleLikeClick = async () => {
+    if (!authToken) {
+      navigate('/SignupLogin');
+      return;
+    }
+
     try {
       const response = await axios.post(
-        `${backend_url}/api/post/${post._id}/like`,
+        `${backend_url}/api/like/post/${post._id}/like`,
         {},
         {
           headers: { token: authToken }
         }
       );
 
-      if (response.data.message === 'Post liked') {
-        setLikes([...likes, { userId, name: Cookies.get('userName'), username: Cookies.get('userUsername') }]);
+      if (response.data.liked) {
+        setLikesCount(likesCount + 1);
         setLiked(true);
-      } else if (response.data.message === 'Post unliked') {
-        setLikes(likes.filter(like => like.userId !== userId));
+      } else {
+        setLikesCount(likesCount - 1);
         setLiked(false);
       }
     } catch (error) {
@@ -59,24 +74,48 @@ export default function PostView() {
       }
     };
 
-    const fetchComments = async () => {
-      try {
-        const response = await axios.get(`${backend_url}/api/comments?postId=${postid}&page=${page}&limit=4`, {
-          headers: { token: authToken }
-        });
-        if (page === 1) {
-          setComments(response.data.comments || []);
-        } else {
-          setComments(prevComments => [...prevComments, ...(response.data.comments || [])]);
-        }
-      } catch (error) {
-        console.error('Error fetching comments:', error);
-      }
-    };
-
     fetchPost();
-    fetchComments();
-  }, [postid, backend_url, page]);
+  }, [postid, backend_url, authToken]);
+
+  const fetchFirstPageComments = async () => {
+    try {
+      const response = await axios.get(`${backend_url}/api/comments`, {
+        headers: { token: authToken },
+        params: {
+          postId: postid,
+          page: 1,
+          limit: 4,
+        },
+      });
+
+      const newComments = response.data.comments || [];
+      setComments(newComments);
+      setHasMore(newComments.length === 4);
+      setPage(2);
+    } catch (error) {
+      console.error('Error fetching comments:', error);
+    }
+  };
+
+  const fetchNextPageComments = async () => {
+    try {
+      const response = await axios.get(`${backend_url}/api/comments`, {
+        headers: { token: authToken },
+        params: {
+          postId: postid,
+          page,
+          limit: 4,
+        },
+      });
+
+      const newComments = response.data.comments || [];
+      setComments((prevComments) => [...prevComments, ...newComments]);
+      setHasMore(newComments.length === 4);
+      setPage((prevPage) => prevPage + 1);
+    } catch (error) {
+      console.error('Error fetching comments:', error);
+    }
+  };
 
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
@@ -84,13 +123,17 @@ export default function PostView() {
       await axios.post(`${backend_url}/api/comments`, { postId: postid, content: commentText }, {
         headers: { token: authToken }
       });
-      const response = await axios.get(`${backend_url}/api/comments?postId=${postid}&page=1&limit=4`);
-      setComments(response.data.comments);
       setCommentText('');
+      setPage(1);
+      fetchFirstPageComments();
     } catch (error) {
       console.error('Error posting comment:', error);
     }
   };
+
+  useEffect(() => {
+    fetchFirstPageComments();
+  }, [postid, backend_url, authToken]);
 
   if (!post) return <h1>Loading...</h1>;
 
@@ -102,8 +145,10 @@ export default function PostView() {
           <p><div dangerouslySetInnerHTML={{ __html: post.content }} /></p>
           <div className="tags">
             <span style={{ fontSize: '1rem' }}>
-              <i className={`fa-${liked ? 'solid' : 'regular'} fa-heart`} onClick={handleToggleLike}></i> {likes.length}
-              &nbsp;&nbsp;&nbsp;
+              <i 
+                className={`fa-${liked ? 'solid' : 'regular'} fa-heart`}
+                onClick={handleLikeClick}
+              ></i> {likesCount} &nbsp;&nbsp;&nbsp;
               <i className="fa-solid fa-share"></i>&nbsp;{post.shares}
             </span>
           </div>
@@ -127,8 +172,15 @@ export default function PostView() {
           </form>
           <br />
           <h4>Comments ({comments.length})</h4>
-          <CommentList comments={comments} postId={postid} setComments={setComments} />
-          <button className="follow-button" onClick={() => setPage(prevPage => prevPage + 1)}>Load More Comments</button>
+          <InfiniteScroll
+            dataLength={comments.length}
+            next={fetchNextPageComments}
+            hasMore={hasMore}
+            loader={<h4>Loading...</h4>}
+            endMessage={<p style={{ textAlign: 'center' }}>No more comments</p>}
+          >
+            <CommentList comments={comments} postId={postid} setComments={setComments} />
+          </InfiniteScroll>
         </div>
       </div>
     </div>

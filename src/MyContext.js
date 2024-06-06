@@ -7,7 +7,6 @@ export const MyContext = createContext();
 
 // Create a provider component
 export const MyProvider = ({ children }) => {
-  const [state, setState] = useState('Default Value');
   const [isLoggedIn, setLoggedIn] = useState(false);
   const backend_url = "http://localhost:5000";
   const [userData, setUserData] = useState({
@@ -25,7 +24,6 @@ export const MyProvider = ({ children }) => {
               token: ` ${token}`
             }
           });
-          console.log('User Data Response:', response.data);
           setUserData(response.data.user);
           setLoggedIn(true);
         } catch (error) {
@@ -44,7 +42,7 @@ const Logout=()=>{
   setLoggedIn(false)
 }
   return (
-    <MyContext.Provider value={{ state, setState, backend_url, isLoggedIn, setLoggedIn, userData, setUserData ,Login,Logout}}>
+    <MyContext.Provider value={{ backend_url, isLoggedIn, setLoggedIn, userData, setUserData ,Login,Logout}}>
       {children}
     </MyContext.Provider>
   );

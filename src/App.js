@@ -11,8 +11,11 @@ import Following from './pages/Following';
 import WhoToFollow from './components/WhoToFollow';
 import SignupLogin from './pages/SignupLogin';
 import PostList from './pages/PostList';
-
+import Cookies from 'js-cookie';
+import Profile from './pages/Profile';
+const token = Cookies.get('authToken');
 function App() {
+
   return (
     <BrowserRouter>
       <div className="app">
@@ -27,6 +30,7 @@ function App() {
             <Route path="/post-form" element={<PostForm />} />
             <Route path="/post/:postid" element={<PostView />} />
             <Route path="/SignupLogin" element={<SignupLogin />} />
+            <Route path="/profile" element={<Profile />} />
             {/* Add more routes for other pages */}
           </Routes>
           
@@ -54,8 +58,7 @@ function ConditionalBottomNav() {
 
 function ConditionalWhoToFollow() {
   const location = useLocation();
-  console.log(location.pathname==='/post')
-  return (location.pathname === '/SignupLogin'|| location.pathname=== '/post-form') ?  null:<WhoToFollow /> ;
+  return (location.pathname === '/SignupLogin'|| location.pathname=== '/post-form' || location.pathname==='/profile'|| token===undefined) ?  null:<WhoToFollow /> ;
 }
 
 export default App;

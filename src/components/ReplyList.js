@@ -6,7 +6,7 @@ const ReplyList = ({ replies, commentId, loadMoreReplies }) => {
     <div>
       {replies.map(reply => (
         <div key={reply._id} className="replayCard">
-          <img src={userImage} alt="user" width={30} /> &nbsp;&nbsp; <b>{reply.name}</b> @{reply.username}
+          <img src={userImage} alt="user" width={30} /> &nbsp;&nbsp; <b>{reply.userId.name}</b> @{reply.userId.username}
           <p style={{ padding: '6px 40px' }}>{reply.content}</p>
         </div>
       ))}

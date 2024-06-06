@@ -102,9 +102,9 @@ const AuthForm = () => {
       console.log('OTP Verification Response:', response.data);
       const token = response.data.token;
       // Save the token in cookies
+      Login();
       Cookies.set('authToken', token.token, { expires: 7 }); // expires in 7 days
       toast.success('OTP verification successful');
-      Login();
       navigate('/');  // Redirect to home page
     } catch (error) {
       console.error('OTP Verification Error:', error);

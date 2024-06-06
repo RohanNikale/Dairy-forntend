@@ -9,7 +9,7 @@ const CommentList = ({ comments, postId, setComments }) => {
   const [showReplies, setShowReplies] = useState({});
   const [repliesPage, setRepliesPage] = useState({});
   const authToken = Cookies.get('authToken');
-  const { backend_url, userData } = useContext(MyContext);
+  const { backend_url } = useContext(MyContext);
   const handleReplySubmit = async (commentId, replyText) => {
     try {
       await axios.post(`${backend_url}/api/comments/${commentId}/replies`, { content: replyText }, {
@@ -70,7 +70,7 @@ const CommentList = ({ comments, postId, setComments }) => {
       {comments.map(comment => (
         <div key={comment._id} className="commentCard">
           <div className="comment">
-            <img src={userImage} alt="user" width={30} /> &nbsp;&nbsp; <b>{comment.name}</b> @{comment.username}
+            <img src={userImage} alt="user" width={30} /> &nbsp;&nbsp; <b>{comment.userId.name}</b> @{comment.userId.username}
             <p style={{ padding: '6px 40px' }}>{comment.content}</p>
             <button className="follow-button" onClick={() => toggleReplies(comment._id)}>
               {showReplies[comment._id] ? 'Hide Replies' : 'Show Replies'}
