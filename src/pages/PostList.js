@@ -1,35 +1,63 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import PostCard from '../components/PostCard';
 import { MyContext } from '../MyContext';
+import Cookies from 'js-cookie';
+import loader from '../components/loader.gif';
 
-export default function PostList(props) {
-  const {backend_url}=useContext(MyContext)
+function PostList({type}) {
+  const { backend_url, userData } = useContext(MyContext);
   const [posts, setPosts] = useState([]);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const authToken = Cookies.get('authToken');
+
+  const fetchPosts = async (currentPage) => {
+    try {
+      const response = await axios.get(`${backend_url}/api/post/recommended/?type=${type}&page=${currentPage}&limit=4`, {
+        headers: { token: authToken }
+      });
+      const newPosts = response.data.posts;
+      // Check if newPosts is an array and contains the expected posts
+      if (Array.isArray(newPosts)) {
+        setPosts(prevPosts => [...prevPosts, ...newPosts.filter(post => !prevPosts.some(p => p._id === post._id))]);
+        setHasMore(newPosts.length > 0);
+      } else {
+        console.error('Unexpected response format:', response.data);
+        setHasMore(false);
+      }
+    } catch (error) {
+      console.error('Error fetching posts:', error);
+      setHasMore(false);
+    }
+  };
 
   useEffect(() => {
-      // Fetch post data
-      const fetchPosts = async () => {
-          try {
-              const response = await axios.get(`${backend_url}/api/post/getPostsbytype/${props.type}?page=1&limit=10`); // Assuming your API endpoint for fetching posts is '/api/posts'
-              setPosts(response.data.posts); // Assuming the response contains an array of posts under 'posts' key
-          } catch (error) {
-              console.error('Error fetching posts:', error);
-          }
-      };
+    fetchPosts(page);
+  }, [page,type]);
 
-      fetchPosts();
-  }, []);
+  const fetchMoreData = () => {
+    setPage(prevPage => prevPage + 1);
+  };
 
   return (
-    <div>
-      {posts.length > 0 ? (
-        posts.map(post => (
-          <PostCard key={post.id} post={post} />
-        ))
-      ) : (
+    <InfiniteScroll
+      dataLength={posts.length}
+      next={fetchMoreData}
+      hasMore={hasMore}
+      loader={<><center><img src={loader} alt=""width={39} /></center></>}
+      endMessage={<p style={{ textAlign: 'center' }}>No more posts</p>}
+    >
+      {posts.length === 0 ? (
         <h1>No posts</h1>
+      ) : (
+        posts.map(post => (
+          <PostCard key={post._id} post={post} />
+        ))
       )}
-    </div>
+    </InfiniteScroll>
   );
 }
+
+export default PostList;

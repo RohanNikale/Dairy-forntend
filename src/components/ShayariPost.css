@@ -4,11 +4,15 @@
     padding: 20px;
     font-family: Arial, sans-serif;
   }
-  
 
-  .post {
+
+  .card-post .post {
     text-align: center;
     margin-top: 20px;
+    background: url('https://img.freepik.com/free-photo/pattern-with-watercolor-flowers-vintage_1268-29266.jpg?size=626&ext=jpg&ga=GA1.1.1518270500.1717632000&semt=ais_user') no-repeat center center;
+    padding: 40px;
+    font-weight: 600;
+    border-radius: 20px;
   }
   
   .post p {
@@ -37,9 +41,9 @@
   }
 
 
-  .fa-heart ,.fa-share{
+  .tags i{
     color: #e0245e;
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     margin: 4px;
   }
 
@@ -54,3 +58,45 @@
     color: red;
   }
   
+
+  /* Styles for the share popup */
+.share-popup {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  border: 1px solid #ccc;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+}
+
+.share-popup button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.share-popup button:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+}
+
+.share-popup button:active {
+  background-color: #003f7f;
+  transform: translateY(0);
+}
+
+.share-popup button:last-child {
+  margin-bottom: 0;
+}

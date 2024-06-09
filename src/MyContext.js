@@ -9,10 +9,14 @@ export const MyContext = createContext();
 export const MyProvider = ({ children }) => {
   const [isLoggedIn, setLoggedIn] = useState(false);
   const backend_url = "http://localhost:5000";
+  
+    const [notifications, setNotifications] = useState([]);
+    const [totalNotifications, setTotalNotifications] = useState(0);
   const [userData, setUserData] = useState({
     name: "",
     email: ""
   });
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -34,6 +38,45 @@ export const MyProvider = ({ children }) => {
 
     fetchUser();
   }, []);
+
+
+  const token = Cookies.get('authToken');
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const response = await axios.get(`${backend_url}/api/notifications`, {
+          headers: {
+            'token': token
+          }
+        });
+        const fetchedNotifications = response.data.notifications;
+        setNotifications(fetchedNotifications);
+        setTotalNotifications(fetchedNotifications.length);
+        setUnreadNotifications(fetchedNotifications.filter(notification => !notification.read).length);
+      } catch (error) {
+        console.error('Error fetching notifications:', error);
+      }
+    };
+
+    fetchNotifications();
+  }, [backend_url, token]);
+
+  
+  const markAsRead = async (notificationId) => {
+    try {
+      await axios.patch(`${backend_url}/api/notifications/${notificationId}/read`, {}, {
+        headers: {
+          'token': token
+        }
+      });
+      setNotifications(notifications.map(n => n._id === notificationId ? { ...n, read: true } : n));
+      setUnreadNotifications(prev => prev - 1);
+    } catch (error) {
+      console.error('Error marking notification as read:', error);
+    }
+  };
+
 const Login=()=>{
   setLoggedIn(true)
 }
@@ -42,7 +85,7 @@ const Logout=()=>{
   setLoggedIn(false)
 }
   return (
-    <MyContext.Provider value={{ backend_url, isLoggedIn, setLoggedIn, userData, setUserData ,Login,Logout}}>
+    <MyContext.Provider value={{ backend_url, isLoggedIn, setLoggedIn, userData, setUserData ,Login,Logout,markAsRead,notifications,totalNotifications,setUnreadNotifications,unreadNotifications}}>
       {children}
     </MyContext.Provider>
   );

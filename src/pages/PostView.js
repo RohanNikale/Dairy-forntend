@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { MyContext } from '../MyContext';
 import CommentList from '../components/CommentList';
 import userImage from '../components/user.png';
-
+import loader from '../components/loader.gif';
+import './PostView.css'
 export default function PostView() {
-  const { backend_url, userData } = useContext(MyContext);
+  const { backend_url } = useContext(MyContext);
   const { postid } = useParams();
   const navigate = useNavigate();
   const [post, setPost] = useState(null);
@@ -18,20 +19,12 @@ export default function PostView() {
   const [page, setPage] = useState(1);
   const [likesCount, setLikesCount] = useState(0);
   const [liked, setLiked] = useState(false);
-  const userId = userData._id;
   const authToken = Cookies.get('authToken');
 
   useEffect(() => {
     if (post) {
       setLikesCount(post.likesCount);
       // Check if the user has liked the post
-      axios.get(`${backend_url}/api/like/post/${post._id}/likeStatus`, {
-        headers: { token: authToken }
-      }).then(response => {
-        setLiked(response.data.liked);
-      }).catch(error => {
-        console.error('Error checking like status:', error);
-      });
     }
   }, [post, backend_url, authToken]);
 
@@ -69,6 +62,7 @@ export default function PostView() {
           headers: { token: authToken }
         });
         setPost(response.data.post);
+        setLiked(response.data.liked);
       } catch (error) {
         console.error('Error fetching post:', error);
       }
@@ -130,26 +124,48 @@ export default function PostView() {
       console.error('Error posting comment:', error);
     }
   };
+  const handleShare = (post) => {
+    if (navigator.share) {
+        navigator.share({
+            title: 'Check out this post!',
+            text: post.title,
+            url: `${window.location.origin}/post/${post._id}`
+        }).then(() => {
+            console.log('Thanks for sharing!');
+        }).catch((error) => {
+            console.error('Error sharing:', error);
+        });
+    } else {
+        alert('Sharing is not supported on this browser.');
+    }
+};
 
   useEffect(() => {
     fetchFirstPageComments();
   }, [postid, backend_url, authToken]);
 
-  if (!post) return <h1>Loading...</h1>;
+  if (!post) return <><center><img src={loader} alt=""width={39} /></center></>;
 
   return (
     <div>
       <div className="container">
-        <img src={userImage} alt="user" width={39} /> &nbsp;&nbsp; <b>{post.author}</b> @{post.username}
-        <div className="post">
+        <Link style={{ color: "black", textDecoration: "none" }} to={`/profile/${post.userId}`}>
+          <img src={userImage} alt="user" width={39} /> &nbsp;&nbsp; <b>{post.userId.name}</b> @{post.userId.username}
+        </Link>
+        <div className="post" style={{ fontSize: "0.9rem" }}>
           <p><div dangerouslySetInnerHTML={{ __html: post.content }} /></p>
           <div className="tags">
             <span style={{ fontSize: '1rem' }}>
-              <i 
+              <i
                 className={`fa-${liked ? 'solid' : 'regular'} fa-heart`}
                 onClick={handleLikeClick}
-              ></i> {likesCount} &nbsp;&nbsp;&nbsp;
-              <i className="fa-solid fa-share"></i>&nbsp;{post.shares}
+              >
+              </i> {likesCount} &nbsp;&nbsp;&nbsp;
+              <i
+                                            className="fa-solid fa-share"
+                                            onClick={() => handleShare(post)}
+                                            style={{ cursor: 'pointer' }}
+                                        ></i>&nbsp;{post.shares}
             </span>
           </div>
         </div>

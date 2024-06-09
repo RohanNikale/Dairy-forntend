@@ -13,6 +13,7 @@ const ShayariPost = ({ post }) => {
 
   const [likes, setLikes] = useState(post.likesCount || 0);
   const [liked, setLiked] = useState(post.liked || false);
+  const [expanded, setExpanded] = useState(false);
 
   const handleToggleLike = async () => {
     if (!authToken) {
@@ -43,12 +44,49 @@ const ShayariPost = ({ post }) => {
     }
   };
 
+  const handleShare = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: 'Check out this post!',
+        text: post.content,
+        url: `${window.location.origin}/post/${post._id}`
+      }).then(() => {
+        console.log('Thanks for sharing!');
+      }).catch((error) => {
+        console.error('Error sharing:', error);
+      });
+    } else {
+      alert('Sharing is not supported on this browser.');
+    }
+  };
+
+  const handleReadMore = () => {
+    setExpanded(true);
+  };
+
+  const truncatedContent = post.content.length > 142 ? post.content.substring(0, 160) + '...' : post.content;
+
   return (
-    <div className="container">
-      <img src={userImage} alt="user" width={39} /> &nbsp;&nbsp; <b>{post.author}</b> @{post.username}
+    <div className="container card-post">
+      <Link style={{ color: "black", textDecoration: "none" }} to={`/profile/${post.userId._id}`}>
+        <img src={userImage} alt="user" width={39} /> &nbsp;&nbsp; <b>{post.userId.name}</b> @{post.userId.username}
+      </Link>
       <div className="post">
         <Link to={`/post/${post._id}`}>
-          <div dangerouslySetInnerHTML={{ __html: post.content }} />
+          <div>
+            {expanded ? (
+              <div dangerouslySetInnerHTML={{ __html: post.content }} />
+            ) : (
+              <div>
+                <div dangerouslySetInnerHTML={{ __html: truncatedContent }} />
+                {post.content.length > 142 && (
+                  <span onClick={handleReadMore} style={{ color: '#e0245e', cursor: 'pointer' }}>
+                    Read more
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
         </Link>
         <div className="tags">
           <span style={{ fontSize: '1rem' }}>
@@ -58,7 +96,11 @@ const ShayariPost = ({ post }) => {
               style={{ cursor: 'pointer' }}
             ></i> {likes}
             &nbsp;&nbsp;&nbsp;
-            <i className="fa-solid fa-share"></i>&nbsp;{post.shares}
+            <i
+              className="fa-solid fa-share"
+              onClick={handleShare}
+              style={{ cursor: 'pointer' }}
+            ></i>&nbsp;{post.shares}
           </span>
         </div>
       </div>

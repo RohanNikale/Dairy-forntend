@@ -3,6 +3,15 @@
     padding: 30px;
     margin: 17px 0;
 }
-.replayCard{
-    margin-left: 50px;
+
+.replyCard{
+    margin-left: 60px;
+}
+
+
+
+.commentCard p {
+    min-width: 500px;
+    word-break: break-all;
+    height: auto;
 }

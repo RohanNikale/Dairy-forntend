@@ -1,23 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import './WhoToFollow.css';
+import { Link, useNavigate } from 'react-router-dom';
+import { MyContext } from '../MyContext';
+import userpic from './user.png'
 
 function WhoToFollow() {
+  const { backend_url } = useContext(MyContext);
+  const navigate = useNavigate();
   const [profiles, setProfiles] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const token = Cookies.get('authToken');
 
-  useEffect(() => {
-    fetchProfiles(currentPage);
-  }, [currentPage]);
-
-  const fetchProfiles = async (page) => {
+  const fetchProfiles = useCallback(async (page) => {
     try {
-      const response = await axios.get('http://localhost:5000/api/follow/profiles-to-follow', {
+      const response = await axios.get(`${backend_url}/api/follow/profiles-to-follow`, {
         headers: {
-          'token': `${token}`
+          'token': token
         },
         params: {
           page: page,
@@ -35,13 +36,22 @@ function WhoToFollow() {
     } catch (error) {
       console.error('Error fetching profiles:', error);
     }
-  };
+  }, [backend_url, token]);
+
+  useEffect(() => {
+    fetchProfiles(currentPage);
+  }, [currentPage, fetchProfiles]);
 
   const handleFollowUnfollow = async (profileId, isFollowed) => {
+    if (!token) {
+      navigate('/SignupLogin'); // Redirect to the login page if not authenticated
+      return;
+    }
+
     try {
-      const response = await axios.post(`http://localhost:5000/api/follow/${profileId}/follow`, {}, {
+      const response = await axios.post(`${backend_url}/api/follow/${profileId}/follow`, {}, {
         headers: {
-          'token': `${token}`
+          'token': token
         }
       });
 
@@ -70,9 +80,11 @@ function WhoToFollow() {
         <span className="divider"></span>
         {profiles.map(profile => (
           <div key={profile.id} className="profile">
-            <div className="profile-pic" style={{ backgroundColor: profile.picColor || 'gray' }}></div>
+            <img src={userpic} alt="user" width={39} /> &nbsp; 
             <div className="profile-info">
+            <Link style={{color:"black",textDecoration:"none"}} to={`/profile/${profile.id}`}> 
               <span className="display-name">{profile.displayName}</span>
+            </Link>
               <span className="username">{profile.username}</span>
             </div>
             <button 

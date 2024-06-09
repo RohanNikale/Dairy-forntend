@@ -1,97 +1,58 @@
+// components/CommentList.js
+
 import React, { useContext, useState } from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import ReplyList from './ReplyList';
 import userImage from '../components/user.png';
 import { MyContext } from '../MyContext';
-import './Comment.css'
+import './Comment.css';
+
 const CommentList = ({ comments, postId, setComments }) => {
   const [showReplies, setShowReplies] = useState({});
-  const [repliesPage, setRepliesPage] = useState({});
   const authToken = Cookies.get('authToken');
-  const { backend_url } = useContext(MyContext);
-  const handleReplySubmit = async (commentId, replyText) => {
+  const { backend_url, userData} = useContext(MyContext);
+
+
+
+  const handleDeleteComment = async (commentId) => {
     try {
-      await axios.post(`${backend_url}/api/comments/${commentId}/replies`, { content: replyText }, {
+      await axios.delete(`${backend_url}/api/comments/${commentId}`, {
         headers: { token: authToken }
       });
-      const response = await axios.get(`${backend_url}/api/comments/${commentId}/replies?page=1&limit=4`);
-      const updatedReplies = response.data.replies;
-      const updatedComments = comments.map(comment => {
-        if (comment._id === commentId) {
-          return { ...comment, replies: updatedReplies };
-        }
-        return comment;
-      });
-      setComments(updatedComments);
+      setComments(prevComments => prevComments.filter(comment => comment._id !== commentId));
     } catch (error) {
-      console.error('Error posting reply:', error);
+      console.error('Error deleting comment:', error);
     }
   };
 
-  const toggleReplies = async (commentId) => {
-    try {
-      const response = await axios.get(`${backend_url}/api/comments/${commentId}/replies?page=1&limit=4`);
-      const updatedReplies = response.data.replies;
-      const updatedComments = comments.map(comment => {
-        if (comment._id === commentId) {
-          return { ...comment, replies: updatedReplies };
-        }
-        return comment;
-      });
-      setShowReplies(prevState => ({ ...prevState, [commentId]: !prevState[commentId] }));
-      setComments(updatedComments);
-      setRepliesPage(prevState => ({ ...prevState, [commentId]: 1 }));
-    } catch (error) {
-      console.error('Error fetching replies:', error);
-    }
-  };
-
-  const loadMoreReplies = async (commentId) => {
-    try {
-      const nextPage = (repliesPage[commentId] || 1) + 1;
-      const response = await axios.get(`${backend_url}/api/comments/${commentId}/replies?page=${nextPage}&limit=4`);
-      const newReplies = response.data.replies;
-      const updatedComments = comments.map(comment => {
-        if (comment._id === commentId) {
-          return { ...comment, replies: [...comment.replies, ...newReplies] };
-        }
-        return comment;
-      });
-      setComments(updatedComments);
-      setRepliesPage(prevState => ({ ...prevState, [commentId]: nextPage }));
-    } catch (error) {
-      console.error('Error loading more replies:', error);
-    }
+  const toggleReplies = (commentId) => {
+    setShowReplies(prevState => ({ ...prevState, [commentId]: !prevState[commentId] }));
   };
 
   return (
     <div>
       {comments.map(comment => (
-        <div key={comment._id} className="commentCard">
+        <div key={comment._id} className="commentCard container">
           <div className="comment">
             <img src={userImage} alt="user" width={30} /> &nbsp;&nbsp; <b>{comment.userId.name}</b> @{comment.userId.username}
-            <p style={{ padding: '6px 40px' }}>{comment.content}</p>
+            <p style={{ padding: '6px 40px', wordWrap: "break-word", minWidth: "300px" }}>{comment.content}</p>
             <button className="follow-button" onClick={() => toggleReplies(comment._id)}>
-              {showReplies[comment._id] ? 'Hide Replies' : 'Show Replies'}
+              {showReplies[comment._id] ? 'Hide Replies' : 'reply'}
             </button>
+            {comment.userId._id===userData._id?
+            <button className="follow-button" style={{ marginLeft: "10px" }} onClick={() => handleDeleteComment(comment._id)}>
+              <i className="fa-solid fa-trash"></i>
+            </button>:null
+            }
           </div>
-            <form onSubmit={(e) => {
-                e.preventDefault();
-                const replyText = e.target.elements.replyText.value;
-                e.target.elements.replyText.value = "";
-                handleReplySubmit(comment._id, replyText);
-            }}>
-                <input type="text" name="replyText" placeholder="Type your reply" style={{ margin: '16px' }} required />
-                <button type="submit" className="follow-button followed">Reply</button>
-            </form>
-            {showReplies[comment._id] && (
-                <ReplyList
-                replies={comment.replies}
-                commentId={comment._id}
-                loadMoreReplies={loadMoreReplies}
-                />
-            )}
+
+          {showReplies[comment._id] && (
+            <ReplyList
+              commentId={comment._id}
+              setComments={setComments}
+            />
+          )}
         </div>
       ))}
     </div>

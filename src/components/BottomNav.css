@@ -27,33 +27,16 @@
   height: 1.5rem;
 }
 
-.navbar.fixed-bottom .nav-link.active .nav-icon,
+.navbar.fixed-bottom .nav-link .active .nav-icon,
 .navbar.fixed-bottom .nav-link:hover .nav-icon {
-  background: var(--rs-primary);
-  background: -moz-linear-gradient(
-    150deg,
-    var(--rs-primary) 20%,
-    var(--rs-secondary) 90%
-  );
-  background: -webkit-linear-gradient(
-    150deg,
-    var(--rs-primary) 20%,
-    var(--rs-secondary) 90%
-  );
-  background: linear-gradient(
-    150deg,
-    var(--rs-primary) 20%,
-    var(--rs-secondary) 90%
-  );
+
+  background-color: #e0245e;
 }
 
 .navbar.fixed-bottom .nav-link.active .nav-icon svg,
 .navbar.fixed-bottom .nav-link:hover .nav-icon svg {
   stroke: var(--rs-white);
 }
-
-
-
 
 
 

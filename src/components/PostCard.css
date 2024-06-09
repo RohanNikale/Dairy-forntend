@@ -1,10 +1,18 @@
 .postcard{
-    border: 1px solid black;
+    /* border: 1px solid black; */
     padding: 20px 50px;
     border-radius: 20px;
     margin: 20px 0;
     width: 500px;
 }
+.postcard {
+    text-align: center;
+    margin-top: 20px;
+    background: url('https://img.freepik.com/free-photo/pattern-with-watercolor-flowers-vintage_1268-29266.jpg?size=626&ext=jpg&ga=GA1.1.1518270500.1717632000&semt=ais_user') no-repeat center center;
+    padding: 20px;
+    font-weight: 600;
+  }
+  
 .postcard p b{
     font-size: 1.1rem;
 }
@@ -14,10 +22,10 @@
 }
 @media (max-width: 523px) {
     .postcard{
-        border: 1px solid black;
-        padding: 20px 50px;
+        /* border: 1px solid black; */
+        padding: 20px 40px;
         border-radius: 20px;
         margin: 20px 5px;
-        width: 97%;
+        width: 100%;
     }   
 }

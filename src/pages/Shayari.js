@@ -4,6 +4,7 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import ShayariPost from '../components/ShayariPost';
 import { MyContext } from '../MyContext';
 import Cookies from 'js-cookie';
+import loader from '../components/loader.gif';
 
 function PostList() {
   const { backend_url, userData } = useContext(MyContext);
@@ -14,7 +15,7 @@ function PostList() {
 
   const fetchPosts = async () => {
     try {
-      const response = await axios.get(`${backend_url}/api/post/getPostsbytype/shayari?&page=${page}&limit=2`, {
+      const response = await axios.get(`${backend_url}/api/post/recommended/?type=shayari&page=${page}&limit=4`, {
         headers: { token: authToken }
       });
       const newPosts = response.data.posts;
@@ -45,7 +46,10 @@ function PostList() {
       dataLength={posts.length}
       next={fetchMoreData}
       hasMore={hasMore}
-      loader={<h4>Loading...</h4>}
+      loader={<><center>
+        <img src={loader} alt=""width={39} />
+        </center>
+        </>}
       endMessage={<p style={{ textAlign: 'center' }}>No more posts</p>}
     >
       {posts.length === 0 ? (

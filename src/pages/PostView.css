@@ -1,2 +1,10 @@
-.comment{
+.Link-a a{
+    color: black;
+    text-decoration: none;
 }
+.container .post {
+    text-align: center;
+    margin-top: 20px;
+
+ 
+  }

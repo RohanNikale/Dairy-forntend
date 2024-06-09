@@ -183,6 +183,32 @@ video {
   background: var(--color-white-200);
 }
 
+
+
+
+.search-results{
+  background-color: #ffffff;
+  /* border: 1px solid black; */
+  box-shadow: 5px 10px 10px 10px rgba(0, 0, 0, 0.27);
+  /* width: 100%; */
+  width: 500px;
+  position : absolute;
+  display: flex;
+  margin-top: 230px;
+  /* left: 0; */
+  /* left: 400px; */
+}
+
+.search-results a{
+  text-decoration: none;
+  color: black;
+  width: auto;
+  display: flex;
+  margin: 27px 0;
+}
+.search-results ul{
+}
+
 .search-input {
   display: block;
   font-family: inherit;
@@ -206,8 +232,17 @@ video {
   color: var(--color-white-500);
   background: transparent;
 }
-
+@media (max-width:62rem) {
+  .search-results{
+    width: 100%;
+      margin-top: 400px;
+    left: 0;
+    /* left: 400px; */
+  }
+  
+}
 @media only screen and (min-width: 62rem) {
+
   .search {
     justify-self: center;
     grid-column: initial;

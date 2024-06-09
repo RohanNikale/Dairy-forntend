@@ -36,6 +36,7 @@ const AuthForm = () => {
     if (isLoggedIn) {
       console.log(isLoggedIn);
       navigate("/");
+
     }
     // Check if the passwords match and enable/disable the sign-up button accordingly
     if (signUpPassword && confirmPassword && signUpPassword === confirmPassword) {
