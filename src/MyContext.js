@@ -8,7 +8,7 @@ export const MyContext = createContext();
 // Create a provider component
 export const MyProvider = ({ children }) => {
   const [isLoggedIn, setLoggedIn] = useState(false);
-  const backend_url = "http://localhost:5000";
+  const backend_url = "";
   
     const [notifications, setNotifications] = useState([]);
     const [totalNotifications, setTotalNotifications] = useState(0);

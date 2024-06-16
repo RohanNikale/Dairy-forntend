@@ -34,6 +34,7 @@ function PostList() {
   };
 
   useEffect(() => {
+    document.title = 'QalaamKaar - shayari'
     fetchPosts();
   }, [page]);
 

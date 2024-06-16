@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import './Navbar.css'; // Import the CSS file
 import { MyContext } from '../MyContext';
-import logo from './logo1.png';
+import logo from './logoMain.png';
 import axios from 'axios'; // Import Axios
 import _ from 'lodash'; // Import lodash for debounce function
 import userImage from './user.png';

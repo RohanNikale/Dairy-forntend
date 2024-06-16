@@ -5,6 +5,8 @@ import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router-dom';
 import { MyContext } from '../MyContext';
 import { Editor } from '@tinymce/tinymce-react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function PostForm() {
   const { backend_url } = useContext(MyContext);
@@ -43,11 +45,17 @@ export default function PostForm() {
     }
 
     setLoading(true);
+    toast.info('Posting...', { autoClose: false });
+
+    const dataToSend = {
+      ...formData,
+      type: formData.type.toLowerCase() // convert type to lowercase
+    };
 
     try {
       await axios.post(
         `${backend_url}/api/post/create`,
-        formData,
+        dataToSend,
         {
           headers: {
             token: authToken,
@@ -62,11 +70,13 @@ export default function PostForm() {
         tags: []
       });
 
-      alert('Post created successfully');
-      navigate('/posts'); // Navigate to posts page or another relevant page
+      toast.dismiss();
+      toast.success('Post created successfully');
+      navigate('/'); // Navigate to home page
     } catch (error) {
       console.error('Error creating post:', error);
-      alert('Error creating post');
+      toast.dismiss();
+      toast.error('Error creating post');
     } finally {
       setLoading(false);
     }
@@ -74,6 +84,7 @@ export default function PostForm() {
 
   return (
     <div className="post-form">
+      <ToastContainer />
       <div className="container">
         <div className="full-screen">
           <div className="content">
@@ -101,7 +112,6 @@ export default function PostForm() {
                       <option value="gazal">Gazal</option>
                       <option value="nazm">Nazm</option>
                       <option value="geet">Geet</option>
-                      <option value="poem">Poem</option>
                     </select>
                   </div>
                   <Editor

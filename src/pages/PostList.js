@@ -34,6 +34,7 @@ function PostList({type}) {
   };
 
   useEffect(() => {
+    document.title=`QalaamKaar - ${type}`
     fetchPosts(page);
   }, [page,type]);
 
