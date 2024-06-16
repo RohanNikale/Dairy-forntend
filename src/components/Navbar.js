@@ -11,7 +11,7 @@ const Header = () => {
   const { isLoggedIn, Logout, backend_url } = useContext(MyContext);
   const [menuActive, setMenuActive] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState([]); // State to store search results
+  const [searchResults, setSearchResults] = useState({ users: [], posts: [] }); // State to store search results
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -28,13 +28,13 @@ const Header = () => {
   useEffect(() => {
     const fetchSearchResults = async () => {
       if (searchQuery.trim() === '') {
-        setSearchResults([]);
+        setSearchResults({ users: [], posts: [] });
         return;
       }
 
       try {
         const response = await axios.get(`${backend_url}/api/user/search?query=${searchQuery}`);
-        setSearchResults(response.data.users);
+        setSearchResults({ users: response.data.users, posts: response.data.posts });
       } catch (error) {
         console.error('Error searching:', error);
       }
@@ -66,22 +66,11 @@ const Header = () => {
                 type="text"
                 name="search"
                 className="search-input"
-                placeholder="Search for Destinations"
+                placeholder="Search"
                 autoFocus
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
-              {searchResults.length > 0 && (
-                <div className="search-results">
-                  <ul>
-                    {searchResults.map(user => (
-                      <Link key={user._id} style={{ color: "black", textDecoration: "none" }} to={`/profile/${user._id}`} onClick={handleResultClick}>
-                        <img src={userImage} alt="user" width={39} /> &nbsp;&nbsp;&nbsp; <b>{user.name}</b> @{user.username}
-                      </Link>
-                    ))}
-                  </ul>
-                </div>
-              )}
               <button type="submit" className="search-submit">
                 <i className="fa-solid fa-magnifying-glass"></i>
               </button>
@@ -89,12 +78,6 @@ const Header = () => {
           </div>
           <div className={`menu ${menuActive ? 'is-active' : ''}`} id="menu">
             <ul className="menu-inner">
-              {/* <li className="menu-item">
-                <Link to="" className="menu-link" onClick={closeMenu}>Support</Link>
-              </li>
-              <li className="menu-item">
-                <Link to="" className="menu-link" onClick={closeMenu}>Listing</Link>
-              </li> */}
               {!isLoggedIn ? (
                 <Link to="/SignupLogin">
                   <button className="follow-button">Login/Signup</button>
@@ -111,34 +94,65 @@ const Header = () => {
           </div>
         </nav>
       </header>
+      <br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<div className="container">
+
+              {(searchResults.users.length > 0 || searchResults.posts.length > 0) && (
+                <div className="search-results">
+                  <ul>
+                    <h4><b>
+                      Post
+                      </b>
+                      </h4>
+                    {searchResults.posts.map(post => (
+                      <Link key={post._id} style={{ color: "black", textDecoration: "none" }} to={`/post/${post._id}`} onClick={handleResultClick}>
+                        <div>
+                          <b>{post.title}</b> by {post.userId.name}
+                        </div>
+                      </Link>
+                    ))}
+                    <h4>
+                      <br />
+                      <b>
+                        QalaamKaars
+                        </b>
+                      </h4>
+                    {searchResults.users.map(user => (
+                      <Link key={user._id} style={{ color: "black", textDecoration: "none" }} to={`/profile/${user._id}`} onClick={handleResultClick}>
+                        <img src={userImage} alt="user" width={39} /> &nbsp;&nbsp;&nbsp; <b>{user.name}</b> @{user.username}
+                      </Link>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              </div>
       <div>
 
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        {location.pathname==="/post-form"?"":
-        <div>
-        <br />
-        {!isProfilePage && (
+        {location.pathname === "/post-form" ? "" :
           <div>
-            <div className='d-flex align-items-center justify-content-center'>
-              <div className="secondNavbar">
-                <ul>
-                  <Link to='/'><li className={location.pathname === '/' ? 'active' : ''}>शेर</li></Link>
-                  <Link to='/gazal'><li className={location.pathname === '/gazal' ? 'active' : ''}>ग़ज़ल</li></Link>
-                  <Link to='/geet'><li className={location.pathname === '/geet' ? 'active' : ''}>गीत</li></Link>
-                  <Link to='/nazm'><li className={location.pathname === '/nazm' ? 'active' : ''}>नज़्म</li></Link>
-                </ul>
-                <hr />
+            <br />
+            {!isProfilePage && (
+              <div>
+                <div className='d-flex align-items-center justify-content-center'>
+                  <div className="secondNavbar">
+                    <ul>
+                      <Link to='/'><li className={location.pathname === '/' ? 'active' : ''}>शेर</li></Link>
+                      <Link to='/gazal'><li className={location.pathname === '/gazal' ? 'active' : ''}>ग़ज़ल</li></Link>
+                      <Link to='/geet'><li className={location.pathname === '/geet' ? 'active' : ''}>गीत</li></Link>
+                      <Link to='/nazm'><li className={location.pathname === '/nazm' ? 'active' : ''}>नज़्म</li></Link>
+                    </ul>
+                    <hr />
+                  </div>
+                </div>
               </div>
-            </div>
+            )}
           </div>
-        )}
-        </div>
         }
       </div>
     </div>

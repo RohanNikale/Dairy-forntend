@@ -188,15 +188,6 @@ video {
 
 .search-results{
   background-color: #ffffff;
-  /* border: 1px solid black; */
-  box-shadow: 5px 10px 10px 10px rgba(0, 0, 0, 0.27);
-  /* width: 100%; */
-  width: 500px;
-  position : absolute;
-  display: flex;
-  margin-top: 230px;
-  /* left: 0; */
-  /* left: 400px; */
 }
 
 .search-results a{
@@ -204,9 +195,12 @@ video {
   color: black;
   width: auto;
   display: flex;
-  margin: 27px 0;
+  /* margin: 30px 0; */
+  border-bottom: 1px solid black;
+  padding: 20px;
 }
 .search-results ul{
+  padding-left: 0;
 }
 
 .search-input {
@@ -234,10 +228,7 @@ video {
 }
 @media (max-width:62rem) {
   .search-results{
-    width: 100%;
-      margin-top: 400px;
-    left: 0;
-    /* left: 400px; */
+
   }
   
 }

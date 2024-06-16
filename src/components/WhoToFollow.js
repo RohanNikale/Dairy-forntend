@@ -5,8 +5,25 @@ import './WhoToFollow.css';
 import { Link, useNavigate } from 'react-router-dom';
 import { MyContext } from '../MyContext';
 import userpic from './user.png'
-
+function getWindowDimensions() {
+  const { innerWidth: width, innerHeight: height } = window;
+  return {
+    width,
+    height
+  };
+}
 function WhoToFollow() {
+  const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
+
+  useEffect(() => {
+    function handleResize() {
+      setWindowDimensions(getWindowDimensions());
+    }
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const { backend_url } = useContext(MyContext);
   const navigate = useNavigate();
   const [profiles, setProfiles] = useState([]);
@@ -15,26 +32,29 @@ function WhoToFollow() {
   const token = Cookies.get('authToken');
 
   const fetchProfiles = useCallback(async (page) => {
-    try {
-      const response = await axios.get(`${backend_url}/api/follow/profiles-to-follow`, {
-        headers: {
-          'token': token
-        },
-        params: {
-          page: page,
-          limit: 4
-        }
-      });
+    if (!(windowDimensions.width <= 992)) {
 
-      if (page === 1) {
-        setProfiles(response.data.profiles);
-      } else {
-        setProfiles(prevProfiles => [...prevProfiles, ...response.data.profiles]);
+      try {
+        const response = await axios.get(`${backend_url}/api/follow/profiles-to-follow`, {
+          headers: {
+            'token': token
+          },
+          params: {
+            page: page,
+            limit: 4
+          }
+        });
+
+        if (page === 1) {
+          setProfiles(response.data.profiles);
+        } else {
+          setProfiles(prevProfiles => [...prevProfiles, ...response.data.profiles]);
+        }
+        setCurrentPage(response.data.currentPage);
+        setTotalPages(response.data.totalPages);
+      } catch (error) {
+        console.error('Error fetching profiles:', error);
       }
-      setCurrentPage(response.data.currentPage);
-      setTotalPages(response.data.totalPages);
-    } catch (error) {
-      console.error('Error fetching profiles:', error);
     }
   }, [backend_url, token]);
 
@@ -56,7 +76,7 @@ function WhoToFollow() {
       });
 
       if (response.status === 200) {
-        setProfiles(profiles.map(profile => 
+        setProfiles(profiles.map(profile =>
           profile.id === profileId ? { ...profile, followed: !isFollowed } : profile
         ));
       } else {
@@ -80,15 +100,15 @@ function WhoToFollow() {
         <span className="divider"></span>
         {profiles.map(profile => (
           <div key={profile.id} className="profile">
-            <img src={userpic} alt="user" width={39} /> &nbsp; 
+            <img src={userpic} alt="user" width={39} /> &nbsp;
             <div className="profile-info">
-            <Link style={{color:"black",textDecoration:"none"}} to={`/profile/${profile.id}`}> 
-              <span className="display-name">{profile.displayName}</span>
-            </Link>
+              <Link style={{ color: "black", textDecoration: "none" }} to={`/profile/${profile.id}`}>
+                <span className="display-name">{profile.displayName}</span>
+              </Link>
               <span className="username">{profile.username}</span>
             </div>
-            <button 
-              className={`follow-button ${profile.followed ? 'followed' : ''}`} 
+            <button
+              className={`follow-button ${profile.followed ? 'followed' : ''}`}
               onClick={() => handleFollowUnfollow(profile.id, profile.followed)}
             >
               {profile.followed ? 'Unfollow' : 'Follow'}

@@ -13,17 +13,18 @@ export default function BottomNav() {
         <ul className="navbar-nav nav-justified w-100">
           <li className={`nav-item ${location.pathname === '/' ? 'active' : ''}`}>
             <Link className="nav-link position-relative" to="/">
-              <div className="nav-icon"><i className="fa-solid fa-house"></i></div>Home
+              <div className="nav-icon"><i className="fa-solid fa-house"></i></div>
             </Link>
           </li>
           <li className={`nav-item ${location.pathname === '/notification' ? 'active' : ''}`}>
             <Link className="nav-link position-relative" to="/notification">
-              <div className="nav-icon"><i className="fa-solid fa-bell"></i>{unreadNotifications}</div>Notification
+              <div className="nav-icon"><i className="fa-solid fa-bell"></i>{unreadNotifications}</div>
             </Link>
           </li>
           <li className={`nav-item ${location.pathname === `/profile/${userData._id}` ? 'active' : ''}`}>
             <Link className="nav-link position-relative" to={isLoggedIn ? `/profile/${userData._id}` : '/SignupLogin'}>
-              <div className="nav-icon"><i className="fa-solid fa-user"></i></div>{isLoggedIn ? "Me" : "Login"}
+              <div className="nav-icon"><i className="fa-solid fa-user"></i></div>
+              {/* {isLoggedIn ? "Me" : "Login"} */}
             </Link>
           </li>
         </ul>
