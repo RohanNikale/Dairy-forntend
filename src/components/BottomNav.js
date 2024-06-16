@@ -4,7 +4,7 @@ import { MyContext } from '../MyContext';
 import './BottomNav.css';
 
 export default function BottomNav() {
-  const { userData,isLoggedIn,unreadNotifications } = useContext(MyContext);
+  const { userData, isLoggedIn, unreadNotifications } = useContext(MyContext);
   const location = useLocation();
 
   return (
@@ -22,19 +22,19 @@ export default function BottomNav() {
             </Link>
           </li>
           <li className={`nav-item ${location.pathname === `/profile/${userData._id}` ? 'active' : ''}`}>
-            <Link className="nav-link position-relative" to={isLoggedIn?`/profile/${userData._id}`:'/SignupLogin'}>
-              <div className="nav-icon"><i className="fa-solid fa-user"></i></div>{isLoggedIn?"My Account":"Login"}
+            <Link className="nav-link position-relative" to={isLoggedIn ? `/profile/${userData._id}` : '/SignupLogin'}>
+              <div className="nav-icon"><i className="fa-solid fa-user"></i></div>{isLoggedIn ? "Me" : "Login"}
             </Link>
           </li>
         </ul>
       </nav>
-{isLoggedIn?
-      <div id="mybutton">
-        <Link to="/post-form">
-          <button className="feedback">+</button>
-        </Link>
-      </div>
-        :"" }
+      {isLoggedIn ?
+        <div id="mybutton">
+          <Link to="/post-form">
+            <button className="feedback">+</button>
+          </Link>
+        </div>
+        : ""}
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext, useCallback } from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import '../components/WhoToFollow.css';
+import './UserToFollow.css';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { MyContext } from '../MyContext';
 import userpic from '../components/user.png';
@@ -25,13 +25,13 @@ export default function FollowAndFollowing() {
 
         setIsLoading(true);
         try {
-            const response = await axios.get(`${backend_url}/api/follow/${userid}/${followAndfollowings}`, {
+            const response = await axios.get(`${backend_url}/api/follow/profiles-to-follow`, {
                 headers: {
                     'token': token
                 },
                 params: {
                     page: page,
-                    limit: 10
+                    limit: 4
                 }
             });
 
@@ -68,7 +68,7 @@ export default function FollowAndFollowing() {
 
             if (response.status === 200) {
                 setProfiles(profiles.map(profile =>
-                    profile._id === profileId ? { ...profile, followed: !isFollowed } : profile
+                    profile.id === profileId ? { ...profile, followed: !isFollowed } : profile
                 ));
             } else {
                 console.error('Error following/unfollowing profile:', response.statusText);
@@ -86,25 +86,30 @@ export default function FollowAndFollowing() {
 
     return (
         <div>
-            <h1 className="card-title">{followAndfollowings}</h1>
+            <div id="mybutton">
+                <Link to="/">
+                    <button className="feedback"><i class="fa-solid fa-arrow-right"></i></button>
+                </Link>
+            </div>
+            <h1 className="card-title">Pepole to follow</h1>
             {isLoading && <div className="loader"><center>
-                <img src={loader} alt=""width={39} />
-                </center>
-                </div>}
+                <img src={loader} alt="" width={39} />
+            </center>
+            </div>}
             {!isLoading && profiles.length === 0 && `No ${followAndfollowings}`}
             <span className="divider"></span>
             {profiles.map(profile => (
                 <div key={profile.id} className="profile">
-                    <img src={userpic} alt="user" width={39} /> &nbsp;&nbsp; 
+                    <img src={userpic} alt="user" width={39} /> &nbsp;&nbsp;
                     <div className="profile-info">
                         <Link style={{ color: "black", textDecoration: "none" }} to={`/profile/${profile._id}/`}>
-                            <span className="display-name">{profile.name}</span>
+                            <span className="display-name">{profile.displayName}</span>
                             <span className="username">{profile.username}</span>
                         </Link>
                     </div>
-                    <button 
-                        className={`follow-button ${profile.followed ? 'followed' : ''}`} 
-                        onClick={() => handleFollowUnfollow(profile._id, profile.followed)}
+                    <button
+                        className={`follow-button ${profile.followed ? 'followed' : ''}`}
+                        onClick={() => handleFollowUnfollow(profile.id, profile.followed)}
                     >
                         {profile.followed ? 'Unfollow' : 'Follow'}
                     </button>

@@ -15,6 +15,7 @@ import Profile from './pages/Profile';
 import FollowAndFollowing from './pages/FollowAndFollowing';
 import Notification from './pages/Notification';
 import Test from './components/test';
+import UserToFollow from './pages/UserToFollow';
 function App() {
 
   return (
@@ -34,6 +35,7 @@ function App() {
             <Route path="/profile/:userid/:followAndfollowings" element={<FollowAndFollowing />} />
             <Route path="/notification" element={<Notification />} />
             <Route path="/test" element={<Test />} />
+            <Route path="/whotofollow" element={<UserToFollow />} />
             {/* Add more routes for other pages */}
           </Routes>
           
@@ -51,17 +53,17 @@ function App() {
 
 function ConditionalNavbar() {
   const location = useLocation();
-  return location.pathname === '/SignupLogin' ? null : <Navbar />;
+  return location.pathname === '/SignupLogin'||location.pathname=== '/whotofollow' ? null : <Navbar />;
 }
 function ConditionalBottomNav() {
   const location = useLocation();
-  return location.pathname === '/SignupLogin' ? null : <BottomNav />;
+  return location.pathname === '/SignupLogin'||location.pathname=== '/whotofollow' ? null : <BottomNav />;
 }
 
 function ConditionalWhoToFollow() {
   const location = useLocation();
   console.log()
-  return (location.pathname === '/SignupLogin'|| location.pathname=== '/post-form' || location.pathname.startsWith('/profile')) ?  null:<WhoToFollow /> ;
+  return (location.pathname === '/SignupLogin'|| location.pathname=== '/post-form' ||location.pathname=== '/whotofollow' || location.pathname.startsWith('/profile')) ?  null:<WhoToFollow /> ;
 }
 
 export default App;

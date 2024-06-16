@@ -106,7 +106,7 @@ const AuthForm = () => {
       Login();
       Cookies.set('authToken', token.token, { expires: 7 }); // expires in 7 days
       toast.success('OTP verification successful');
-      navigate('/');  // Redirect to home page
+      navigate('/whotofollow');  // Redirect to home page
     } catch (error) {
       console.error('OTP Verification Error:', error);
       toast.error('Please enter valid OTP');
